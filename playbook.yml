@@ -1,0 +1,61 @@
+- hosts: all
+  tasks:
+  - name: "install general dependencies"
+    apt:
+      name:
+      - curl
+      - git
+      - vim
+      update_cache: true
+      state: latest
+    become: true
+  - name: "add visual studio apt signing key"
+    apt_key:
+      url: https://packages.microsoft.com/keys/microsoft.asc
+    become: true
+  - name: "add visual studio repository"
+    apt_repository:
+      repo: "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main"
+    become: true
+  - name: "install visual studio"
+    apt:
+      name: 
+      - code
+      update_cache: true
+      state: latest
+    become: true
+  - name: "install ruby and rbenv dependencies"
+    apt:
+      name:
+      - ruby
+      - ruby-dev
+      - build-essential
+      - libssl-dev
+      - libreadline-dev
+      - zlib1g-dev
+      update_cache: true
+      state: latest
+    become: true
+  - name: "install rbenv"
+    shell: "curl -fsSL https://github.com/rbenv/rbenv-installer/raw/master/bin/rbenv-installer | bash"
+    ignore_errors: true
+  - name: "install zsh"
+    apt:
+      name: zsh
+      state: latest
+    become: true
+  - name: 'make zsh the default shell'
+    user:
+      name: "{{ ansible_user_id }}"
+      shell: /bin/zsh
+    become: true
+  - name: "install oh-my-zsh"
+    git:
+      repo: https://github.com/robbyrussell/oh-my-zsh
+      dest: ~/.oh-my-zsh
+  - name: 'copy zshrc: config'
+    file:
+      src: "{{ ansible_env.PWD }}/config/.zshrc"
+      path: '~/.zshrc'
+      state: link
+      force: true

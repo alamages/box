@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+ansible-playbook --inventory "localhost," --connection local playbook.yml
